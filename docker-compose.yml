@@ -1,0 +1,22 @@
+services:
+  tempered-tone-bookkeeping:
+    build: .
+    ports:
+      - "3002:3000"
+    environment:
+      - DATABASE_PATH=/data/bookkeeping.sqlite
+      - UPLOADS_DIR=/app/uploads
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
+    volumes:
+      # A named volume (not a bind mount) for the SQLite file: Docker
+      # Desktop's virtualized bind-mount filesystem on macOS doesn't
+      # reliably support the file locking SQLite needs for any journal
+      # mode, which segfaults better-sqlite3 on first access. A named
+      # volume lives natively in the Docker VM's own filesystem instead.
+      - sqlite_data:/data
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+
+volumes:
+  sqlite_data:

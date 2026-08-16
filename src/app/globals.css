@@ -1,0 +1,238 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #faf6ee;
+  --surface: #ffffff;
+  --hover: #efe7d7;
+  --sidebar-bg: #14181f;
+  --sidebar-text: #f5efe5;
+  --sidebar-line: #f5efe514;
+  --text: #0b0e13;
+  --text-muted: #14181f7a;
+  --border: #14181f1f;
+  --border-strong: #14181f33;
+  --grid-line: #14181f0f;
+  --accent: #e8632a;
+  --accent-hover: #c04618;
+  --accent-text: #c04618;
+  --accent-soft: #e8632a1a;
+  --accent-tint: #e8632a0d;
+  --accent-glow: #e8632a2e;
+  --status-success: #3f8f5a;
+  --status-warning: #d49a2a;
+  --status-info: #3f6b8f;
+  --status-error: #b14b3a;
+  --status-success-soft: #3f8f5a1f;
+  --status-warning-soft: #d49a2a24;
+  --status-info-soft: #3f6b8f1f;
+  --status-error-soft: #b14b3a1f;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-card: 18px;
+  --radius-pill: 999px;
+}
+
+:root.dark {
+  --bg: #0e1218;
+  --surface: #161b23;
+  --hover: #252d3a;
+  --sidebar-bg: #0b0e13;
+  --sidebar-text: #f0ebe0;
+  --sidebar-line: #f0ebe00f;
+  --text: #f0ebe0;
+  --text-muted: #f0ebe06b;
+  --border: #f0ebe01a;
+  --border-strong: #f0ebe02e;
+  --grid-line: #f0ebe00d;
+  --accent: #e8632a;
+  --accent-hover: #f39a6b;
+  --accent-text: #f39a6b;
+  --accent-soft: #e8632a24;
+  --accent-tint: #e8632a12;
+  --accent-glow: #e8632a4d;
+  --status-success: #4fb36a;
+  --status-warning: #e5a647;
+  --status-info: #5c8ebe;
+  --status-error: #d46e5f;
+  --status-success-soft: #4fb36a29;
+  --status-warning-soft: #e5a6472e;
+  --status-info-soft: #5c8ebe29;
+  --status-error-soft: #d46e5f29;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-hover: var(--hover);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-text: var(--sidebar-text);
+  --color-sidebar-line: var(--sidebar-line);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-grid-line: var(--grid-line);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-text: var(--accent-text);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-tint: var(--accent-tint);
+  --color-accent-glow: var(--accent-glow);
+  --color-success: var(--status-success);
+  --color-warning: var(--status-warning);
+  --color-info: var(--status-info);
+  --color-error: var(--status-error);
+  --color-success-soft: var(--status-success-soft);
+  --color-warning-soft: var(--status-warning-soft);
+  --color-info-soft: var(--status-info-soft);
+  --color-error-soft: var(--status-error-soft);
+
+  --radius-card: var(--radius-card);
+  --radius-pill: var(--radius-pill);
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-margin: var(--font-caveat), cursive;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+/* Reusable surface / control primitives, built on the token set above. */
+
+.surface-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.control-input {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.control-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.btn-secondary:hover {
+  background: var(--hover);
+  border-color: var(--accent);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+.table-shell {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.table-shell th {
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.table-shell td {
+  border-bottom: 1px solid var(--grid-line);
+}
+
+.table-shell tbody tr {
+  transition: background-color 120ms ease;
+}
+
+.table-shell tbody tr:hover {
+  background: var(--hover);
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--hover);
+  border-radius: var(--radius-md);
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+  animation: skeleton-sweep 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-sweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
