@@ -1,6 +1,6 @@
-import type { CategoryType, AccountType } from "../../db/schema";
+import type { CategoryType, AccountType, CategoryClassification } from "../../db/schema";
 
-export type { CategoryType, AccountType };
+export type { CategoryType, AccountType, CategoryClassification };
 
 export interface CategoryMapRuleRow {
   id: number;
@@ -10,12 +10,14 @@ export interface CategoryMapRuleRow {
   categoryId: number;
   categoryName: string;
   categoryType: CategoryType;
+  categoryClassification: CategoryClassification;
 }
 
 export interface CategoryRow {
   id: number;
   name: string;
   type: CategoryType;
+  classification: CategoryClassification;
   isActive: boolean;
 }
 

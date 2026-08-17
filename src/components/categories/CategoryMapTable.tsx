@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { CategoryMapRuleRow, CategoryRow, CategoryType } from "@/lib/types";
+import type { CategoryMapRuleRow, CategoryRow, CategoryType, CategoryClassification } from "@/lib/types";
 import { SortableHeader, compareForSort, type SortDirection } from "@/components/ui/SortableHeader";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { usePersistedState } from "@/lib/usePersistedState";
 
 const TYPES: CategoryType[] = ["Income", "Expense", "Transfer", "Credit Card"];
+const CLASSIFICATIONS: CategoryClassification[] = ["business", "personal"];
 
-type SortField = "keyword" | "category" | "type" | "priority";
+type SortField = "keyword" | "category" | "type" | "classification" | "priority";
 
 export default function CategoryMapTable() {
   const [rules, setRules] = useState<CategoryMapRuleRow[]>([]);
@@ -20,6 +21,7 @@ export default function CategoryMapTable() {
   const [newKeyword, setNewKeyword] = useState("");
   const [newCategory, setNewCategory] = useState("");
   const [newType, setNewType] = useState<CategoryType>("Expense");
+  const [newClassification, setNewClassification] = useState<CategoryClassification>("business");
   const [saving, setSaving] = useState(false);
 
   const [sortField, setSortField] = usePersistedState<SortField>("bk:category-map:sortField", "priority");
@@ -78,6 +80,8 @@ export default function CategoryMapTable() {
           return r.categoryName;
         case "type":
           return r.categoryType;
+        case "classification":
+          return r.categoryClassification;
         case "priority":
           return r.priority;
       }
@@ -98,6 +102,7 @@ export default function CategoryMapTable() {
           keyword: newKeyword.trim(),
           categoryName: newCategory.trim(),
           categoryType: newType,
+          categoryClassification: newClassification,
         }),
       });
       if (!res.ok) throw new Error();
@@ -191,6 +196,20 @@ export default function CategoryMapTable() {
             ))}
           </select>
         </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-text-muted">Classification</label>
+          <select
+            value={newClassification}
+            onChange={(e) => setNewClassification(e.target.value as CategoryClassification)}
+            className="control-input px-2 py-1.5 text-sm"
+          >
+            {CLASSIFICATIONS.map((c) => (
+              <option key={c} value={c}>
+                {c === "business" ? "Business" : "Personal"}
+              </option>
+            ))}
+          </select>
+        </div>
         <button type="submit" disabled={saving} className="btn-primary px-4 py-1.5 text-sm font-medium disabled:opacity-50">
           Add rule
         </button>
@@ -199,7 +218,7 @@ export default function CategoryMapTable() {
       {error && <p className="mb-4 text-sm text-error">{error}</p>}
 
       {loading ? (
-        <TableSkeleton columns={6} rows={8} />
+        <TableSkeleton columns={7} rows={8} />
       ) : (
         <div className="table-shell">
           <table className="w-full text-sm">
@@ -227,6 +246,13 @@ export default function CategoryMapTable() {
                   onSort={handleSort}
                 />
                 <SortableHeader
+                  label="Classification"
+                  field="classification"
+                  currentField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
                   label="Priority"
                   field="priority"
                   currentField={sortField}
@@ -248,7 +274,7 @@ export default function CategoryMapTable() {
               ))}
               {filteredRules.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-text-muted">
+                  <td colSpan={7} className="px-4 py-10 text-center text-text-muted">
                     {filter ? `No rules match "${filter}".` : "No category map rules yet."}
                   </td>
                 </tr>
@@ -273,6 +299,7 @@ function RuleRow({
   const [keyword, setKeyword] = useState(rule.keyword);
   const [categoryName, setCategoryName] = useState(rule.categoryName);
   const [categoryType, setCategoryType] = useState<CategoryType>(rule.categoryType);
+  const [classification, setClassification] = useState<CategoryClassification>(rule.categoryClassification);
   const [priority, setPriority] = useState(rule.priority);
 
   function commitKeyword() {
@@ -280,8 +307,12 @@ function RuleRow({
   }
   function commitCategory() {
     if (categoryName !== rule.categoryName || categoryType !== rule.categoryType) {
-      onUpdate({ categoryName, categoryType });
+      onUpdate({ categoryName, categoryType, categoryClassification: classification });
     }
+  }
+  function commitClassification(next: CategoryClassification) {
+    setClassification(next);
+    if (next !== rule.categoryClassification) onUpdate({ categoryClassification: next });
   }
   function commitPriority() {
     if (priority !== rule.priority) onUpdate({ priority });
@@ -318,6 +349,19 @@ function RuleRow({
           {TYPES.map((t) => (
             <option key={t} value={t}>
               {t}
+            </option>
+          ))}
+        </select>
+      </td>
+      <td className="px-4 py-2">
+        <select
+          value={classification}
+          onChange={(e) => commitClassification(e.target.value as CategoryClassification)}
+          className="rounded border border-transparent bg-transparent px-1 py-0.5 transition-colors hover:border-border-strong focus:border-accent focus:outline-none"
+        >
+          {CLASSIFICATIONS.map((c) => (
+            <option key={c} value={c}>
+              {c === "business" ? "Business" : "Personal"}
             </option>
           ))}
         </select>

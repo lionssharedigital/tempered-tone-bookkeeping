@@ -10,6 +10,7 @@ import EmptyState from "@/components/ui/EmptyState";
 import ExportMenu from "@/components/ui/ExportMenu";
 import type { ExportFormat } from "@/lib/export";
 import { usePersistedState } from "@/lib/usePersistedState";
+import { UNCATEGORIZED_FILTER_VALUE } from "@/lib/transaction-filter-constants";
 
 type SortField = "date" | "payee" | "account" | "category" | "amount" | "description";
 
@@ -208,6 +209,7 @@ export default function TransactionsTable() {
             className="control-input px-2 py-1.5 text-sm"
           >
             <option value="">All</option>
+            <option value={UNCATEGORIZED_FILTER_VALUE}>Uncategorized</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name} ({c.type})

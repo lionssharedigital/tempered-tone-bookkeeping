@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { desc, eq } from "drizzle-orm";
 import { db } from "../../../../db/client";
-import { categoryMapRules, categories, CATEGORY_TYPES } from "../../../../db/schema";
+import { categoryMapRules, categories, CATEGORY_TYPES, CATEGORY_CLASSIFICATIONS } from "../../../../db/schema";
+import { getOrCreateCategory } from "@/lib/category-lookup";
 
 export async function GET() {
   const rows = db
@@ -14,6 +15,7 @@ export async function GET() {
       categoryId: categoryMapRules.categoryId,
       categoryName: categories.name,
       categoryType: categories.type,
+      categoryClassification: categories.classification,
     })
     .from(categoryMapRules)
     .innerJoin(categories, eq(categoryMapRules.categoryId, categories.id))
@@ -26,19 +28,9 @@ const createSchema = z.object({
   keyword: z.string().trim().min(1),
   categoryName: z.string().trim().min(1),
   categoryType: z.enum(CATEGORY_TYPES),
+  categoryClassification: z.enum(CATEGORY_CLASSIFICATIONS).optional(),
   priority: z.number().int().optional(),
 });
-
-function getOrCreateCategory(name: string, type: (typeof CATEGORY_TYPES)[number]): number {
-  const existing = db
-    .select()
-    .from(categories)
-    .all()
-    .find((c) => c.name === name && c.type === type);
-  if (existing) return existing.id;
-  const [created] = db.insert(categories).values({ name, type }).returning().all();
-  return created.id;
-}
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -46,8 +38,8 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
-  const { keyword, categoryName, categoryType, priority } = parsed.data;
-  const categoryId = getOrCreateCategory(categoryName, categoryType);
+  const { keyword, categoryName, categoryType, categoryClassification, priority } = parsed.data;
+  const categoryId = getOrCreateCategory(categoryName, categoryType, categoryClassification);
 
   const [created] = db
     .insert(categoryMapRules)

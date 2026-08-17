@@ -1,0 +1,1 @@
+ALTER TABLE `categories` ADD `classification` text DEFAULT 'business' NOT NULL;

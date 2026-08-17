@@ -15,6 +15,9 @@ export const CATEGORY_TYPES = [
 ] as const;
 export type CategoryType = (typeof CATEGORY_TYPES)[number];
 
+export const CATEGORY_CLASSIFICATIONS = ["business", "personal"] as const;
+export type CategoryClassification = (typeof CATEGORY_CLASSIFICATIONS)[number];
+
 export const ACCOUNT_TYPES = ["bank", "credit_card"] as const;
 export type AccountType = (typeof ACCOUNT_TYPES)[number];
 
@@ -38,6 +41,7 @@ export const categories = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     name: text("name").notNull(),
     type: text("type").$type<CategoryType>().notNull(),
+    classification: text("classification").$type<CategoryClassification>().notNull().default("business"),
     isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
   },
   (table) => [uniqueIndex("uq_categories_name_type").on(table.name, table.type)],
