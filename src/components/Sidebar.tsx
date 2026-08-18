@@ -7,6 +7,7 @@ import Logo from "@/components/ui/Logo";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const LINKS = [
+  { href: "/", label: "Dashboard" },
   { href: "/transactions", label: "Transactions" },
   { href: "/import", label: "Import" },
   { href: "/categories", label: "Category Map" },

@@ -25,7 +25,7 @@ export default function LoginPage() {
         setError(data.error ?? "Login failed.");
         return;
       }
-      router.push("/transactions");
+      router.push("/");
       router.refresh();
     } finally {
       setLoading(false);
