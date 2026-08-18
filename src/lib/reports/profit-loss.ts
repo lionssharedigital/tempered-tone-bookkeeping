@@ -33,7 +33,10 @@ export interface ProfitLossReport {
 /**
  * P&L is computed on read from transactions, mirroring the original sheet's
  * pivot. Transfer and Credit Card typed categories are excluded, same as the
- * sheet excludes internal transfers to avoid double-counting.
+ * sheet excludes internal transfers to avoid double-counting. Only
+ * "business" classified categories count -- this is a business P&L, so
+ * personal spending (tracked separately on the Personal Budget report) is
+ * left out entirely rather than inflating business expenses.
  */
 export function getProfitLoss(year: number): ProfitLossReport {
   const rows = db
@@ -50,6 +53,7 @@ export function getProfitLoss(year: number): ProfitLossReport {
       and(
         gte(transactions.date, `${year}-01-01`),
         lte(transactions.date, `${year}-12-31`),
+        eq(categories.classification, "business"),
       ),
     )
     .all()

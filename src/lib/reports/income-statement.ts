@@ -27,6 +27,8 @@ export interface IncomeStatementReport {
  * are broken out from ordinary "Expense" categories so Gross Profit
  * (Revenue minus Cost of Sales) can be shown separately from Operating
  * Expenses, matching how a Cost of Goods Sold category is used in practice.
+ * Only "business" classified categories count, same as the P&L -- personal
+ * spending is tracked separately on the Personal Budget report.
  */
 export function getIncomeStatement(startDate: string, endDate: string): IncomeStatementReport {
   const rows = db
@@ -38,7 +40,13 @@ export function getIncomeStatement(startDate: string, endDate: string): IncomeSt
     })
     .from(transactions)
     .innerJoin(categories, eq(transactions.categoryId, categories.id))
-    .where(and(gte(transactions.date, startDate), lte(transactions.date, endDate)))
+    .where(
+      and(
+        gte(transactions.date, startDate),
+        lte(transactions.date, endDate),
+        eq(categories.classification, "business"),
+      ),
+    )
     .all()
     .filter(
       (r) =>
