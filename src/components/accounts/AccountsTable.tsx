@@ -278,8 +278,21 @@ function AccountRowItem({
   onUpdate: (updates: Record<string, unknown>) => void;
   onArchive: () => void;
 }) {
+  const [name, setName] = useState(account.name);
+  const [institution, setInstitution] = useState(account.institution);
   const [balance, setBalance] = useState(centsToDollarsString(account.openingBalanceCents));
 
+  function commitName() {
+    if (name.trim() && name !== account.name) onUpdate({ name: name.trim() });
+    else setName(account.name);
+  }
+  function commitInstitution() {
+    if (institution.trim() && institution !== account.institution) {
+      onUpdate({ institution: institution.trim() });
+    } else {
+      setInstitution(account.institution);
+    }
+  }
   function commitBalance() {
     try {
       const cents = dollarsStringToCents(balance);
@@ -291,10 +304,34 @@ function AccountRowItem({
 
   return (
     <tr className={account.isArchived ? "opacity-50" : ""}>
-      <td className="px-4 py-2 font-medium">{account.name}</td>
-      <td className="px-4 py-2 text-text-muted">{account.institution}</td>
-      <td className="px-4 py-2 text-text-muted">
-        {account.accountType === "bank" ? "Bank" : "Credit Card"}
+      <td className="px-4 py-2 font-medium">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onBlur={commitName}
+          className="w-full rounded border border-transparent bg-transparent px-1 py-0.5 transition-colors hover:border-border-strong focus:border-accent focus:outline-none"
+        />
+      </td>
+      <td className="px-4 py-2">
+        <input
+          value={institution}
+          onChange={(e) => setInstitution(e.target.value)}
+          onBlur={commitInstitution}
+          className="w-full rounded border border-transparent bg-transparent px-1 py-0.5 text-text-muted transition-colors hover:border-border-strong focus:border-accent focus:outline-none"
+        />
+      </td>
+      <td className="px-4 py-2">
+        <select
+          value={account.accountType}
+          onChange={(e) => onUpdate({ accountType: e.target.value })}
+          className="rounded border border-transparent bg-transparent px-1 py-0.5 text-text-muted transition-colors hover:border-border-strong focus:border-accent focus:outline-none"
+        >
+          {ACCOUNT_TYPES.map((t) => (
+            <option key={t} value={t}>
+              {t === "bank" ? "Bank" : "Credit Card"}
+            </option>
+          ))}
+        </select>
       </td>
       <td className="px-4 py-2">
         <input
