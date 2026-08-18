@@ -6,7 +6,7 @@ import { SortableHeader, compareForSort, type SortDirection } from "@/components
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { usePersistedState } from "@/lib/usePersistedState";
 
-const TYPES: CategoryType[] = ["Income", "Expense", "Transfer", "Credit Card"];
+const TYPES: CategoryType[] = ["Income", "Expense", "Cost of Sales", "Transfer", "Credit Card"];
 const CLASSIFICATIONS: CategoryClassification[] = ["business", "personal"];
 
 type SortField = "keyword" | "category" | "type" | "classification" | "priority";

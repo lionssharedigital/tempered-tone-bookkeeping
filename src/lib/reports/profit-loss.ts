@@ -1,12 +1,20 @@
 import { and, eq, gte, lte } from "drizzle-orm";
 import { db } from "../../../db/client";
-import { transactions, categories } from "../../../db/schema";
+import { transactions, categories, type CategoryType } from "../../../db/schema";
 
 export interface CategoryPnlRow {
   categoryId: number;
   categoryName: string;
   categoryType: "Income" | "Expense";
   monthly: number[]; // 12 entries, cents
+  total: number;
+}
+
+interface GroupedRow {
+  categoryId: number;
+  categoryName: string;
+  categoryType: CategoryType;
+  monthly: number[];
   total: number;
 }
 
@@ -45,15 +53,20 @@ export function getProfitLoss(year: number): ProfitLossReport {
       ),
     )
     .all()
-    .filter((r) => r.categoryType === "Income" || r.categoryType === "Expense");
+    .filter(
+      (r) =>
+        r.categoryType === "Income" ||
+        r.categoryType === "Expense" ||
+        r.categoryType === "Cost of Sales",
+    );
 
-  const byCategory = new Map<number, CategoryPnlRow>();
+  const byCategory = new Map<number, GroupedRow>();
   for (const row of rows) {
     if (!byCategory.has(row.categoryId)) {
       byCategory.set(row.categoryId, {
         categoryId: row.categoryId,
         categoryName: row.categoryName,
-        categoryType: row.categoryType as "Income" | "Expense",
+        categoryType: row.categoryType,
         monthly: new Array(12).fill(0),
         total: 0,
       });
@@ -65,13 +78,23 @@ export function getProfitLoss(year: number): ProfitLossReport {
   }
 
   const all = Array.from(byCategory.values()).sort((a, b) => a.categoryName.localeCompare(b.categoryName));
-  const income = all.filter((c) => c.categoryType === "Income");
+  const income: CategoryPnlRow[] = all
+    .filter((c) => c.categoryType === "Income")
+    .map((c) => ({ ...c, categoryType: "Income" as const }));
   // Expense amounts are stored as negative cents (outflows); flip sign on
   // each row so the UI can display a positive magnitude, matching how the
-  // original sheet displays expense categories and TOTAL EXPENSES.
-  const expenses = all
-    .filter((c) => c.categoryType === "Expense")
-    .map((c) => ({ ...c, monthly: c.monthly.map((v) => -v), total: -c.total }));
+  // original sheet displays expense categories and TOTAL EXPENSES. Cost of
+  // Sales categories are lumped in with ordinary Expense categories here --
+  // the Income Statement report (src/lib/reports/income-statement.ts) is
+  // what breaks them out separately for a Gross Profit subtotal.
+  const expenses: CategoryPnlRow[] = all
+    .filter((c) => c.categoryType === "Expense" || c.categoryType === "Cost of Sales")
+    .map((c) => ({
+      ...c,
+      categoryType: "Expense" as const,
+      monthly: c.monthly.map((v) => -v),
+      total: -c.total,
+    }));
 
   const sumMonthly = (rows: CategoryPnlRow[]) =>
     Array.from({ length: 12 }, (_, m) => rows.reduce((s, r) => s + r.monthly[m], 0));

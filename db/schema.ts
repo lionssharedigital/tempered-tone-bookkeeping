@@ -10,6 +10,7 @@ import {
 export const CATEGORY_TYPES = [
   "Income",
   "Expense",
+  "Cost of Sales",
   "Transfer",
   "Credit Card",
 ] as const;
