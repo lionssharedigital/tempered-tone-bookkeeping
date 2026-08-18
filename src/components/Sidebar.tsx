@@ -14,6 +14,7 @@ const LINKS = [
   { href: "/reports/profit-loss", label: "P&L" },
   { href: "/reports/balance-sheet", label: "Balance Sheet" },
   { href: "/reports/personal-budget", label: "Personal Budget" },
+  { href: "/settings", label: "Settings" },
 ];
 
 export default function Sidebar() {
