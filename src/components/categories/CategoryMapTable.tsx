@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import type { CategoryMapRuleRow, CategoryRow, CategoryType, CategoryClassification } from "@/lib/types";
 import { SortableHeader, compareForSort, type SortDirection } from "@/components/ui/SortableHeader";
 import { TableSkeleton } from "@/components/ui/Skeleton";
@@ -145,14 +146,22 @@ export default function CategoryMapTable() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="font-display text-lg font-semibold">Category Map</h1>
-        <input
-          placeholder="Filter by keyword or category..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="control-input w-72 px-3 py-1.5 text-sm"
-        />
+        <div className="flex items-center gap-3">
+          <Link
+            href="/categories/manage"
+            className="text-sm text-accent-text transition-opacity hover:opacity-70"
+          >
+            Manage categories &rarr;
+          </Link>
+          <input
+            placeholder="Filter by keyword or category..."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="control-input w-72 px-3 py-1.5 text-sm"
+          />
+        </div>
       </div>
 
       <form onSubmit={addRule} className="surface-card mb-6 flex flex-wrap items-end gap-3 p-4">

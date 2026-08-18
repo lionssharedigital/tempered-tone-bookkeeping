@@ -21,6 +21,11 @@ export interface CategoryRow {
   isActive: boolean;
 }
 
+export interface CategoryWithCountsRow extends CategoryRow {
+  ruleCount: number;
+  transactionCount: number;
+}
+
 export interface AccountRow {
   id: number;
   name: string;

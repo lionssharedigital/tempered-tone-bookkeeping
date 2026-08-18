@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/transactions", label: "Transactions" },
   { href: "/import", label: "Import" },
   { href: "/categories", label: "Category Map" },
+  { href: "/categories/manage", label: "Categories" },
   { href: "/accounts", label: "Accounts" },
   { href: "/reports/profit-loss", label: "P&L" },
   { href: "/reports/income-statement", label: "Income Statement" },
@@ -23,6 +24,13 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Pick the most specific matching link as active (longest href wins) so a
+  // nested route like /categories/manage doesn't also light up its parent
+  // /categories link.
+  const activeHref = LINKS.map((l) => l.href)
+    .filter((href) => pathname === href || pathname.startsWith(href + "/"))
+    .sort((a, b) => b.length - a.length)[0];
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -67,7 +75,7 @@ export default function Sidebar() {
 
         <nav className="flex flex-1 flex-col gap-1 px-3">
           {LINKS.map((link) => {
-            const active = pathname === link.href || pathname.startsWith(link.href + "/");
+            const active = link.href === activeHref;
             return (
               <Link
                 key={link.href}
